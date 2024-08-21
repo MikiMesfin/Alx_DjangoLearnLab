@@ -33,3 +33,23 @@ urlpatterns = [
     # Other URL patterns
     path('logout/', auth_views.LogoutView.as_view(next_page='home'), name='logout'),
 ]
+
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('admin/', views.admin_view, name='admin'),
+    path('librarian/', views.librarian_view, name='librarian'),
+    path('member/', views.member_view, name='member'),
+]
+
+from django.urls import path
+from .views import home, librarian_view, member_view, register
+
+urlpatterns = [
+    path('', home, name='home'),  # Home page URL pattern
+    path('librarian/', librarian_view, name='librarian'),
+    path('member/', member_view, name='member'),
+    path('register/', register, name='register'),  # Registration URL pattern
+    # Add other URL patterns here
+]
