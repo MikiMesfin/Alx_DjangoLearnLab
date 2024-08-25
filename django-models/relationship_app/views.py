@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.views.generic.detail import DetailView  
 from .models import Book, Library
+from django.contrib import messages
 
 def list_books(request):
     books = Book.objects.all()
@@ -40,23 +41,26 @@ def home(request):
 
 def register(request):
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        role = request.POST['role']
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        role = request.POST.get('role')
+
+        if not username or not password or not role:
+            messages.error(request, "All fields are required.")
+            return redirect('register')
+
+        # Check if user already exists
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "Username already exists.")
+            return redirect('register')
+
         # Create the user
         user = User.objects.create_user(username=username, password=password)
-
-        # Assign the role
         UserProfile.objects.create(user=user, role=role)
 
-        # Log the user in
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect('home')  # Redirect to the home page or any other page
-        else:
-            return render(request, 'register.html', {'error': 'Login failed'})
-    
+        messages.success(request, "Registration successful.")
+        return redirect('login')
+
     return render(request, 'register.html')
 
 from django.shortcuts import render
