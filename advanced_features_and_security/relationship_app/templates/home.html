@@ -1,0 +1,17 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <h1>Welcome to the Home Page!</h1>
+    <a href="{% url 'admin_view' %}">Admin View</a>
+    <a href="{% url 'librarian_view' %}">Librarian View</a>
+    <a href="{% url 'member_view' %}">Member View</a>
+    <a href="{% url 'register' %}">Register</a>
+</body>
+</html>
