@@ -1,71 +1,54 @@
-from django.shortcuts import render
-from django.views.generic.detail import DetailView  
-from .models import Book, Library
-from django.contrib import messages
-
-def list_books(request):
-    books = Book.objects.all()
-    return render(request, 'relationship_app/list_books.html', {'books': books})
-
-class LibraryDetailView(DetailView):
-    model = Library
-    template_name = 'relationship_app/library_detail.html'
-    context_object_name = 'library'
-
-from django.shortcuts import render
-from .models import Book
-
-
-
-def list_books(request):
-    books = Book.objects.all()
-    return render(request, 'relationship_app/list_books.html', {'books': books})
-
-
-from django.views.generic import DetailView
-from .models import Library
-
-class LibraryDetailView(DetailView):
-    model = Library
-    template_name = 'relationship_app/library_detail.html'
-    context_object_name = 'library'
-
-
-from django.shortcuts import render, redirect
-from django.contrib.auth import login
+from typing import Any
+from django.shortcuts import render, redirect, get_object_or_404
+from django.views.generic.detail import DetailView
+from .models import Book, Library, UserProfile
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.views import LogoutView
+from django.contrib.auth import login, logout
+from .forms import BookForm
+from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import login_required
+
+def list_books(request):
+    books = Book.objects.all()
+    return render(request, 'relationship_app/list_books.html', {'books': books})
+
+class LibraryDetailView(DetailView):
+    model = Library
+    template_name = 'relationship_app/library_detail.html'
+    context_object_name = 'library'
+
+
+
+def list_books(request):
+    books = Book.objects.all()
+    return render(request, 'templates/list_books.html', {'books': books})
+
+
+class LibraryDetailView(DetailView):
+    model = Library
+    template_name = 'templates/library_detail.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['books'] = self.object.books.all()
+        return context
 
 def home(request):
     return render(request, 'home.html')
 
 def register(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        role = request.POST.get('role')
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('login')
+    else:
+        form = UserCreationForm()
+    return render(request, 'register.html', {'form': form})
 
-        if not username or not password or not role:
-            messages.error(request, "All fields are required.")
-            return redirect('register')
 
-        # Check if user already exists
-        if User.objects.filter(username=username).exists():
-            messages.error(request, "Username already exists.")
-            return redirect('register')
-
-        # Create the user
-        user = User.objects.create_user(username=username, password=password)
-        UserProfile.objects.create(user=user, role=role)
-
-        messages.success(request, "Registration successful.")
-        return redirect('login')
-
-    return render(request, 'register.html')
-
-from django.shortcuts import render
-from django.contrib.auth.decorators import user_passes_test
-from .models import UserProfile
 
 
 def is_admin(user):
@@ -83,6 +66,12 @@ def is_member(user):
 def admin_view(request):
     return render(request, 'admin_view.html')
 
+@login_required
+def admin_view(request):
+    user_profile = request.user.userprofile
+    # Your view logic here
+    return render(request, 'admin_view.html', {'profile': user_profile})
+
 
 @user_passes_test(is_librarian)
 def librarian_view(request):
@@ -92,6 +81,39 @@ def librarian_view(request):
 @user_passes_test(is_member)
 def member_view(request):
     return render(request, 'member_view.html')
+
+
+
+@permission_required('relationship_app.can_add_book')
+def add_book(request):
+    if request.method == 'POST':
+        form = BookForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('book_list')
+    else:
+        form = BookForm()
+    return render(request, 'add_book.html', {'form': form})
+
+@permission_required('relationship_app.can_change_book')
+def edit_book(request, pk):
+    book = get_object_or_404(Book, pk=pk)
+    if request.method == 'POST':
+        form = BookForm(request.POST, instance=book)
+        if form.is_valid():
+            form.save()
+            return redirect('book_list')
+    else:
+        form = BookForm(instance=book)
+    return render(request, 'edit_book.html', {'form': form})
+
+@permission_required('relationship_app.can_delete_book')
+def delete_book(request, pk):
+    book = get_object_or_404(Book, pk=pk)
+    if request.method == 'POST':
+        book.delete()
+        return redirect('book_list')
+    return render(request, 'delete_book.html', {'book': book})
 
 
 

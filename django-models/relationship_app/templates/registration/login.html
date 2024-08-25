@@ -1,15 +1,15 @@
-{% load static %}
-
 <!-- login.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
+    <!-- Load the static template tag library -->
+    {% load static %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
-    <h1>Login</h1>
+    <h1 href="{% url 'profile' %}">Login</h1>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
