@@ -12,18 +12,8 @@ from django.contrib.auth.decorators import login_required
 
 def list_books(request):
     books = Book.objects.all()
-    return render(request, 'relationship_app/list_books.html', {'books': books})
-
-class LibraryDetailView(DetailView):
-    model = Library
-    template_name = 'relationship_app/library_detail.html'
-    context_object_name = 'library'
-
-
-
-def list_books(request):
-    books = Book.objects.all()
-    return render(request, 'templates/list_books.html', {'books': books})
+    context = {'book_list': books}
+    return render(request, 'relationship_app/list_books.html', context)
 
 
 class LibraryDetailView(DetailView):
@@ -66,11 +56,7 @@ def is_member(user):
 def admin_view(request):
     return render(request, 'admin_view.html')
 
-@login_required
-def admin_view(request):
-    user_profile = request.user.userprofile
-    # Your view logic here
-    return render(request, 'admin_view.html', {'profile': user_profile})
+
 
 
 @user_passes_test(is_librarian)

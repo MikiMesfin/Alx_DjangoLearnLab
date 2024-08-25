@@ -9,8 +9,3 @@ def is_admin(user):
 def admin_view(request):
     return render(request, 'admin_view.html')
 
-@login_required
-def admin_view(request):
-    user_profile = request.user.userprofile
-    # Your view logic here
-    return render(request, 'admin_view.html', {'profile': user_profile})
