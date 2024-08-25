@@ -17,13 +17,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from relationship_app import views
+from django.urls import path
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
     path('login/', views.LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', views.LogoutView.as_view(), name='logout'),
-    path('register/', views.register, name='register'),
+    path('register/', views.register, name='register'), 
 ]
 
 from django.contrib import admin
@@ -34,4 +36,6 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),  
     path('', include('relationship_app.urls')),
 ]
+
+
 
