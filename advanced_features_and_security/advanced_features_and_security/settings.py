@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'relationship_app.apps.RelationshipAppConfig',
+    'bookshelf',
+    'relationship_app',
 ]
 
 MIDDLEWARE = [
@@ -129,7 +130,41 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = "/accounts/profile"
 LOGOUT_REDIRECT_URL = "/logout"
 
-AUTH_USER_MODEL = 'relationship_app.CustomUser'
+AUTH_USER_MODEL = 'bookshelf.CustomUser'
+
+# Redirect all HTTP requests to HTTPS
+SECURE_SSL_REDIRECT = True
+
+# HTTP Strict Transport Security (HSTS) settings
+SECURE_HSTS_SECONDS = 31536000  # 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+# Security settings
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = 'DENY'
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Enforce HTTPS for cookies
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
+# Content Security Policy (CSP)
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_STYLE_SRC = ("'self'", 'https://fonts.googleapis.com')
+CSP_SCRIPT_SRC = ("'self'", 'https://apis.google.com')
+
+# Prevent clickjacking by not allowing the site to be framed
+X_FRAME_OPTIONS = 'DENY'
+
+# Prevent MIME-type sniffing
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Enable XSS protection
+SECURE_BROWSER_XSS_FILTER = True
+
+# Tell Django to trust the X-Forwarded-Proto header set by your proxy server
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
  
