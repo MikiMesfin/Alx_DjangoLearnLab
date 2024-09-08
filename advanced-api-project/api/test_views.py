@@ -1,11 +1,15 @@
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.models import User
 from .models import Book, Author
 
 class BookAPITests(APITestCase):
     def setUp(self):
+        # Create a user for authentication
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+        self.client.login(username='testuser', password='testpassword')  # Log in the user
+        
         # Create test data
         self.author = Author.objects.create(name="Test Author")
         self.book = Book.objects.create(
