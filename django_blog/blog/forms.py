@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import Comment
 from .models import Post, Tag
-from taggit.forms import TagField, TagWidget, Widgets
+from taggit.forms import TagField, TagWidget
 
 class UserRegisterForm(UserCreationForm):
     email = forms.EmailField()
@@ -23,7 +23,7 @@ class PostForm(forms.ModelForm):
         queryset=Tag.objects.all(),
         required=False,
         widget=forms.CheckboxSelectMultiple
-        tags = TagField(required=False, widget=TagWidget())
+        tags = TagField(required=False, widgets=TagWidget())
     )
 
     class Meta:
