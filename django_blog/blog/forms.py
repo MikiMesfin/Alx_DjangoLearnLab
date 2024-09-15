@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import Comment
 from .models import Post, Tag
-from taggit.forms import TagField, TagWidget
+from taggit.forms import TagField, TagWidget, Widgets
 
 class UserRegisterForm(UserCreationForm):
     email = forms.EmailField()
