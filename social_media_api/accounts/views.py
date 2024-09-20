@@ -24,14 +24,28 @@ class CustomAuthToken(ObtainAuthToken):
             'user': UserSerializer(user).data  
         })
 
-def follow_user(request, user_id):
-    user_to_follow = get_object_or_404(CustomUser, id=user_id)
-    if request.user != user_to_follow:
-        request.user.following.add(user_to_follow)
-        return Response({"message": "Successfully followed."}, status=status.HTTP_200_OK)
-    return Response({"error": "Cannot follow yourself."}, status=status.HTTP_400_BAD_REQUEST)
+class FollowUserView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
 
-def unfollow_user(request, user_id):
-    user_to_unfollow = get_object_or_404(CustomUser, id=user_id)
-    request.user.following.remove(user_to_unfollow)
-    return Response({"message": "Successfully unfollowed."}, status=status.HTTP_200_OK)
+    def post(self, request, user_id):
+        user_to_follow = get_object_or_404(CustomUser, id=user_id)
+        if request.user != user_to_follow:
+            request.user.following.add(user_to_follow)
+            return Response({"message": "Successfully followed."}, status=200)
+        return Response({"error": "Cannot follow yourself."}, status=400)
+
+class UnfollowUserView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, user_id):
+        user_to_unfollow = get_object_or_404(CustomUser, id=user_id)
+        request.user.following.remove(user_to_unfollow)
+        return Response({"message": "Successfully unfollowed."}, status=200)
+
+class UserListView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        users = CustomUser.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
