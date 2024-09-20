@@ -14,3 +14,4 @@ class Notification(models.Model):
     target_id = models.PositiveIntegerField()
     target = GenericForeignKey('target_ct', 'target_id')
     created_at = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
