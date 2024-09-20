@@ -40,3 +40,31 @@ def feed(request):
     posts = Post.objects.filter(author__in=followed_users).order_by('-created_at')
     serializer = PostSerializer(posts, many=True)
     return Response(serializer.data)
+
+class LikePostView(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated]
+
+    def create(self, request, pk=None):
+        post = Post.objects.get(pk=pk)
+        like, created = Like.objects.get_or_create(user=request.user, post=post)
+
+        if created:
+            # Create notification
+            Notification.objects.create(
+                recipient=post.author,
+                actor=request.user,
+                verb='liked your post',
+                target_ct=ContentType.objects.get_for_model(post),
+                target_id=post.id
+            )
+            return Response({'status': 'liked'})
+        return Response({'status': 'already liked'}, status=400)
+
+    def destroy(self, request, pk=None):
+        post = Post.objects.get(pk=pk)
+        try:
+            like = Like.objects.get(user=request.user, post=post)
+            like.delete()
+            return Response({'status': 'unliked'})
+        except Like.DoesNotExist:
+            return Response({'status': 'not liked'}, status=400)
