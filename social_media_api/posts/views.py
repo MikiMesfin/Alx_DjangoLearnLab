@@ -21,6 +21,12 @@ class PostViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
+def get_feed(self, request):
+        following_users = request.user.following.all()
+        feed_posts = Post.objects.filter(author__in=following_users).order_by('-created_at')
+        serializer = self.get_serializer(feed_posts, many=True)
+        return Response(serializer.data)
+
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
