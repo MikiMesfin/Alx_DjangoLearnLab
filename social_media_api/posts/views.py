@@ -6,8 +6,9 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from .models import Post
+from .models import Post, Like
 from .serializers import PostSerializer
+from django.shortcuts import get_object_or_404
 
 
 # Create your views here.
