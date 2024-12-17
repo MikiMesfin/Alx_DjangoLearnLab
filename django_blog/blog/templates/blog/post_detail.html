@@ -1,0 +1,24 @@
+{% extends "blog/base.html" %}
+{% block content %}
+  <h1>{{ post.title }}</h1>
+  <p>{{ post.content }}</p>
+
+  <h2>Comments</h2>
+  {% for comment in post.comments.all %}
+    <div>
+      <p>{{ comment.author }}: {{ comment.content }}</p>
+      {% if comment.author == user %}
+        <a href="{% url 'edit_comment' comment.pk %}">Edit</a>
+        <a href="{% url 'delete_comment' comment.pk %}">Delete</a>
+        <a href="{% url 'tagged_posts' tag.name %}">{{ tag.name }}</a>
+      {% endif %}
+    </div>
+  {% endfor %}
+
+  <h2>Add a Comment</h2>
+  <form action="{% url 'add_comment' post.id %}" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Submit Comment</button>
+  </form>
+{% endblock %}
