@@ -7,7 +7,7 @@ A Django-based library management system.
 1. Clone the repository
 
 ```bash
-git clone <your-repo-url>
+git clone (https://github.com/MikiMesfin/Alx_DjangoLearnLab)
 cd LibraryProject
 ```
 
